@@ -1,0 +1,14 @@
+{
+  "domain": "sidebar_manager",
+  "name": "Sidebar Manager",
+  "codeowners": ["@OWNER"],
+  "config_flow": true,
+  "dependencies": ["frontend", "http", "panel_custom", "websocket_api"],
+  "documentation": "https://github.com/OWNER/ha-sidebar-manager",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/OWNER/ha-sidebar-manager/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.1.0"
+}

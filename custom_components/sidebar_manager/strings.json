@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Sidebar Manager",
+        "description": "Adds an admin-only panel to manage the sidebar of every user."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Sidebar Manager is already configured."
+    }
+  }
+}
