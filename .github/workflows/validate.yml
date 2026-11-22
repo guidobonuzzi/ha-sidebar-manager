@@ -20,6 +20,8 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
+          # No brand icon yet; remove once one is added
+          ignore: brands
 
   tests:
     runs-on: ubuntu-latest
