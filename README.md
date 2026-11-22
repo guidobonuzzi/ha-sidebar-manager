@@ -1,7 +1,7 @@
 # Sidebar Manager for Home Assistant
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz)
-[![Validate](https://github.com/OWNER/ha-sidebar-manager/actions/workflows/validate.yml/badge.svg)](https://github.com/OWNER/ha-sidebar-manager/actions/workflows/validate.yml)
+[![Validate](https://github.com/guidobonuzzi/ha-sidebar-manager/actions/workflows/validate.yml/badge.svg)](https://github.com/guidobonuzzi/ha-sidebar-manager/actions/workflows/validate.yml)
 
 Manage the sidebar of **every** Home Assistant user from one admin-only panel, with no YAML involved.
 
@@ -30,7 +30,7 @@ Since Home Assistant 2025.6, each user's sidebar settings are stored server-side
 
 ### HACS (recommended)
 
-1. HACS → ⋮ → *Custom repositories* → add `https://github.com/OWNER/ha-sidebar-manager` as **Integration**.
+1. HACS → ⋮ → *Custom repositories* → add `https://github.com/guidobonuzzi/ha-sidebar-manager` as **Integration**.
 2. Install **Sidebar Manager** and restart Home Assistant.
 3. *Settings → Devices & services → Add integration → Sidebar Manager*.
 
