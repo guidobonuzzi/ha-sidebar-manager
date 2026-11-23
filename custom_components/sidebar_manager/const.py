@@ -3,7 +3,7 @@
 from typing import Final
 
 DOMAIN: Final = "sidebar_manager"
-VERSION: Final = "0.2.0"
+VERSION: Final = "0.2.1"
 
 PANEL_URL_PATH: Final = "sidebar-manager"
 PANEL_COMPONENT: Final = "sidebar-manager-panel"

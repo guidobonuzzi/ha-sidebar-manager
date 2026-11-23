@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.1
 
 ### Changed
 - The default dashboard selector is now at the top of the profile editor.
