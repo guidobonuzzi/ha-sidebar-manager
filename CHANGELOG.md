@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- The default dashboard selector is now at the top of the profile editor.
+- The profile's default dashboard can't be hidden any more: Home Assistant's sidebar always shows it anyway. When the profile uses *Home Assistant default*, the system default dashboard (or *Home*) is the one kept visible.
+
 ## 0.2.0
 
 ### Added

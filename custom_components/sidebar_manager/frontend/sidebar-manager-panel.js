@@ -28,6 +28,8 @@ const I18N = {
     admin_only_hint: "This profile has non-admin users: admin-only items are never shown to them.",
     default_panel: "Default dashboard",
     default_none: "Home Assistant default",
+    default_chip: "default",
+    default_always: "The default dashboard is always shown: Home Assistant doesn't let it be hidden. To hide a dashboard, pick another default.",
     lock: "Lock",
     lock_hint: "If a user changes their sidebar from their profile page, it's reset to this profile.",
     new_items: "New items",
@@ -81,6 +83,8 @@ const I18N = {
     admin_only_hint: "Questo profilo ha utenti non amministratori: le voci solo admin non vengono mai mostrate a loro.",
     default_panel: "Dashboard predefinita",
     default_none: "Predefinita di Home Assistant",
+    default_chip: "predefinita",
+    default_always: "La dashboard predefinita è sempre visibile: Home Assistant non permette di nasconderla. Per nascondere una dashboard, scegline un'altra come predefinita.",
     lock: "Blocca",
     lock_hint: "Se un utente modifica la barra laterale dal suo profilo, viene riportata a questo profilo.",
     new_items: "Nuove voci",
@@ -247,9 +251,25 @@ class SidebarManagerPanel extends HTMLElement {
     });
   }
 
+  // The dashboard Home Assistant opens for the profile's users. Its sidebar
+  // always shows it, even when hidden (same rule as getDefaultPanelUrlPath).
+  _effectiveDefault(defaultPanel) {
+    const panel = defaultPanel || this._hass.systemData?.default_panel || DEFAULT_PANEL;
+    if (panel === "lovelace" && !this._hass.panels.lovelace?.config) return DEFAULT_PANEL;
+    return panel;
+  }
+
+  _showDefault(draft) {
+    const def = this._effectiveDefault(draft.default);
+    draft.items.forEach((i) => {
+      if (i.url_path === def) i.visible = true;
+    });
+    return draft;
+  }
+
   _draftFrom(id) {
     const p = this._profiles()[id];
-    return {
+    return this._showDefault({
       id,
       name: p.name,
       items: this._buildItems(p.panel_order, p.hidden_panels, p.new_items, p.default_panel),
@@ -258,11 +278,11 @@ class SidebarManagerPanel extends HTMLElement {
       new_items: p.new_items,
       is_default: p.is_default,
       users: new Set(this._users().filter((u) => u.profile_id === id).map((u) => u.id)),
-    };
+    });
   }
 
   _newDraft() {
-    return {
+    return this._showDefault({
       id: null,
       name: "",
       items: this._buildItems([], [], "show", ""),
@@ -271,7 +291,7 @@ class SidebarManagerPanel extends HTMLElement {
       new_items: "show",
       is_default: false,
       users: new Set(),
-    };
+    });
   }
 
   // ---- actions ------------------------------------------------------------
@@ -342,7 +362,7 @@ class SidebarManagerPanel extends HTMLElement {
   }
 
   async _save() {
-    const d = this._draft;
+    const d = this._showDefault(this._draft);
     this._resetMessages();
     if (!d.name.trim()) {
       this._error = this._t("name_required");
@@ -449,6 +469,7 @@ class SidebarManagerPanel extends HTMLElement {
           break;
         case "default":
           d.default = el.value;
+          this._showDefault(d);
           this._changed();
           break;
         case "lock":
@@ -583,6 +604,7 @@ class SidebarManagerPanel extends HTMLElement {
     if (!d) return "";
     const profiles = this._profiles();
     const users = this._users();
+    const def = this._effectiveDefault(d.default);
     // Users who would get this profile once saved
     const affected = users.filter((u) => d.users.has(u.id) || (d.is_default && !u.profile_id));
     const adminNote = d.items.some((i) => i.admin) && affected.some((u) => !u.is_admin);
@@ -607,19 +629,28 @@ class SidebarManagerPanel extends HTMLElement {
             <span>${t("name")}</span>
             <input type="text" data-action="name" value="${esc(d.name)}" placeholder="${esc(t("new_profile"))}" />
           </label>
+          <label class="field">
+            <span>${t("default_panel")}</span>
+            <select data-action="default">
+              <option value="" ${!d.default ? "selected" : ""}>${t("default_none")}</option>
+              ${d.items.map((i) => `<option value="${esc(i.url_path)}" ${i.url_path === d.default ? "selected" : ""}>${esc(i.title)}</option>`).join("")}
+            </select>
+          </label>
         </div>
 
         <div class="card">
           <h2>${t("items")}</h2>
           <p class="hint">${t("items_hint")}</p>
+          ${d.items.some((i) => i.url_path === def) ? `<p class="hint">${t("default_always")}</p>` : ""}
           ${adminNote ? `<p class="hint warn">${t("admin_only_hint")}</p>` : ""}
           <ul class="list">
             ${d.items.map((i, idx) => `
               <li class="item ${i.visible ? "" : "hidden"}" draggable="true" data-idx="${idx}">
                 <ha-icon class="grip" icon="mdi:drag"></ha-icon>
-                <input type="checkbox" data-action="visible" data-idx="${idx}" ${i.visible ? "checked" : ""} />
+                <input type="checkbox" data-action="visible" data-idx="${idx}" ${i.visible ? "checked" : ""} ${i.url_path === def ? "disabled" : ""} />
                 <ha-icon icon="${esc(i.icon || "mdi:view-dashboard")}"></ha-icon>
                 <span class="title">${esc(i.title)}</span>
+                ${i.url_path === def ? `<span class="chip accent">${t("default_chip")}</span>` : ""}
                 ${i.admin ? `<span class="chip">${t("admin_only")}</span>` : ""}
                 <span class="path">/${esc(i.url_path)}</span>
                 <button class="icon" data-click="up" data-idx="${idx}" title="${t("up")}" ${idx === 0 ? "disabled" : ""}><ha-icon icon="mdi:chevron-up"></ha-icon></button>
@@ -629,13 +660,6 @@ class SidebarManagerPanel extends HTMLElement {
         </div>
 
         <div class="card">
-          <label class="field">
-            <span>${t("default_panel")}</span>
-            <select data-action="default">
-              <option value="" ${!d.default ? "selected" : ""}>${t("default_none")}</option>
-              ${d.items.map((i) => `<option value="${esc(i.url_path)}" ${i.url_path === d.default ? "selected" : ""}>${esc(i.title)}</option>`).join("")}
-            </select>
-          </label>
           <label class="field">
             <span>${t("new_items")}<br /><small class="hint">${t("new_items_hint")}</small></span>
             <select data-action="new_items">

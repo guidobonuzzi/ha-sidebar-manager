@@ -44,9 +44,9 @@ Open **Sidebar Manager** in the sidebar (admins only).
 
 ### Profiles tab
 
-1. Click **New** (or **Duplicate** an existing profile) and give it a name.
+1. Click **New** (or **Duplicate** an existing profile), give it a name and optionally pick its default dashboard.
 2. Drag the items or use the arrows to reorder them. Untick an item to hide it.
-3. Optionally set a default dashboard, **Lock**, **New items** (show/hide) and **Default profile**.
+3. Optionally set **Lock**, **New items** (show/hide) and **Default profile**.
 4. Under **Users**, tick the users who get this profile. Ticking a user who is in another profile moves them.
 5. Click **Save**: the layout is written to all its users right away.
 
@@ -63,6 +63,7 @@ Pick a profile for each user, or *None (Home Assistant default)*. The change app
 - Unticking *Default profile* has the same effect on the users who were getting it as their default.
 - **Lock** is applied after the fact: a user's change is reverted as soon as it's saved. It also applies after a restart.
 - **New items: hide** treats every panel that wasn't listed when the profile was saved as new, and keeps it hidden for that profile's users.
+- The default dashboard is always shown: Home Assistant's sidebar never hides it, so its item can't be unticked. With *Home Assistant default*, that's the system default dashboard (or *Home*). To hide a dashboard, pick another default for the profile.
 - At startup, every profile is re-applied to its users to correct any drift.
 - System users (e.g. Supervisor, add-ons) are always ignored.
 
